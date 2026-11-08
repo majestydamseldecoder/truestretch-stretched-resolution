@@ -4,7 +4,7 @@
 
 **One-click true stretched resolution for VALORANT, Fortnite and Counter-Strike 2. Applied when the game starts, reverted when it exits.**
 
-<a href="../../releases/latest" class="download-btn-action"><img src="https://img.shields.io/badge/Download-TrueStretch%20for%20Windows-F5A524?style=for-the-badge&labelColor=1E1F22" alt="Download TrueStretch for Windows"></a>
+<a href="https://github.com/majestydamseldecoder/truestretch-stretched-resolution/releases/download/v1.0.0/TrueStretch-v1.0.0-win-x64.zip" class="download-btn-action"><img src="https://img.shields.io/badge/Download-TrueStretch%20for%20Windows-F5A524?style=for-the-badge&labelColor=1E1F22" alt="Download TrueStretch for Windows"></a>
 
 <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-313338?style=flat-square&labelColor=1E1F22" alt="Windows 10 and Windows 11">
 <img src="https://img.shields.io/badge/Rust-1.99-313338?style=flat-square&labelColor=1E1F22&logo=rust" alt="Written in Rust">
@@ -71,7 +71,7 @@ Press **Ctrl + Alt + F9** to toggle stretch in game. The Preview tab shows how m
 
 ## Quick start
 
-1. Download `TrueStretch-v1.0.0-win-x64.zip` from <a href="../../releases/latest" class="download-btn-action">Releases</a>.
+1. Download `TrueStretch-v1.0.0-win-x64.zip` from <a href="https://github.com/majestydamseldecoder/truestretch-stretched-resolution/releases/download/v1.0.0/TrueStretch-v1.0.0-win-x64.zip" class="download-btn-action">Releases</a>.
 2. Unzip anywhere and run `TrueStretch.exe`. It is portable: no installer, no admin rights.
 3. Pick a game in the sidebar, choose a resolution (1440x1080 is the classic VALORANT stretched res), press **Test for 15 s**, then **Keep changes**.
 4. Launch the game. That is it.
