@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TrueStretch - README banner</title>
+<style>
+:root{
+  --title:#1E1F22; --side:#2B2D31; --main:#313338; --sel:#404249; --line:#3F4147;
+  --text:#F2F3F5; --body:#DBDEE1; --faint:#949BA4; --mute:#6D6F78; --accent:#F5A524; --ok:#23A55A;
+  --f-display:'SF Pro','SF Pro Display',-apple-system,'Segoe UI Variable Display',system-ui,sans-serif;
+  --f-text:'SF Pro Text','SF Pro',-apple-system,'Segoe UI Variable Text',system-ui,sans-serif;
+  --f-mono:'SF Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1280px;height:440px;overflow:hidden;background:#0c0d0f}
+body{font-family:var(--f-text);color:var(--body);-webkit-font-smoothing:antialiased}
+#b{position:relative;width:1280px;height:440px;overflow:hidden;background:radial-gradient(ellipse 700px 420px at 78% 50%,#1a1c20 0%,#0c0d0f 70%)}
+.bars{position:absolute;left:0;right:0;bottom:0;height:8px;display:flex}
+.bars i{flex:1}
+.left{position:absolute;left:64px;top:66px;width:520px}
+.mark{display:flex;align-items:center;gap:14px}
+.mark .ico{width:40px;height:40px;border-radius:10px;overflow:hidden;display:flex}
+.mark .ico i{flex:1}
+.mark span{font:600 15px var(--f-text);color:var(--faint);letter-spacing:.02em}
+h1{font:800 58px/1 var(--f-display);color:var(--text);margin-top:26px;letter-spacing:-.005em;white-space:nowrap}
+h1 em{font-style:normal;font-stretch:150%;color:var(--accent)}
+p{font:400 19px/1.45 var(--f-text);color:#B5BAC1;margin-top:18px;max-width:500px}
+.chips{display:flex;gap:8px;margin-top:26px}
+.chips span{font:600 13px var(--f-mono);color:var(--body);background:#1E1F22;border-radius:5px;padding:7px 10px;box-shadow:inset 0 0 0 1px #2c2e33}
+.chips span.on{color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.win{position:absolute;left:640px;top:52px;width:700px;height:400px;border-radius:9px 0 0 0;overflow:hidden;background:var(--main);box-shadow:0 30px 70px rgba(0,0,0,.6),0 0 0 1px #111214}
+.tb{height:28px;background:var(--title);display:flex;align-items:center;padding-left:10px;font:600 11.5px var(--f-text);color:#B5BAC1;gap:8px}
+.tb i{width:13px;height:13px;border-radius:3px;background:linear-gradient(90deg,#C0C0C0 0 14%,#C0C000 14% 28%,#00C0C0 28% 43%,#00C000 43% 57%,#C000C0 57% 71%,#C00000 71% 86%,#0000C0 86%)}
+.bd{display:flex;height:372px}
+.sd{width:176px;background:var(--side);padding:12px 7px}
+.sh{font:600 10.5px var(--f-text);color:var(--faint);margin:0 6px 6px}
+.gr{display:flex;align-items:center;gap:8px;height:40px;padding:0 7px;border-radius:5px;color:var(--faint)}
+.gr.on{background:var(--sel);color:var(--text)}
+.tile{position:relative;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font:700 10px var(--f-text);color:#fff;flex:none}
+.tile .run{position:absolute;right:-3px;bottom:-3px;width:10px;height:10px;border-radius:50%;background:var(--ok);border:2px solid var(--sel)}
+.gr b{display:block;font:500 12.5px var(--f-text);color:inherit;white-space:nowrap}
+.gr small{display:block;font:500 10.5px var(--f-text);color:var(--mute)}
+.mn{flex:1;padding:14px 16px}
+.hd{display:flex;align-items:center;gap:9px}
+.hd .tile{width:30px;height:30px;border-radius:7px;font-size:12px}
+.hd b{display:block;font:600 14.5px var(--f-text);color:var(--text)}
+.hd small{display:block;font:400 11px var(--f-text);color:var(--faint)}
+.hd small em{font-style:normal;color:var(--ok)}
+.btn{margin-left:auto;font:600 12px var(--f-text);background:var(--accent);color:#1E1F22;border-radius:5px;padding:7px 11px}
+.pv{position:relative;width:492px;height:277px;margin-top:14px;border-radius:5px;overflow:hidden;background:#000}
+.pv > svg{position:absolute;inset:0;width:100%;height:100%}
+.tag{position:absolute;top:10px;font:800 9.5px/1 var(--f-display);font-stretch:150%;padding:5px 7px;border-radius:3px;color:#111}
+.split{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:#fff}
+.knob{position:absolute;top:82%;left:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6F98AE"/><stop offset="1" stop-color="#E2CDA6"/></linearGradient>
+  <linearGradient id="door" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d1a19"/><stop offset="1" stop-color="#3a302a"/></linearGradient>
+  <linearGradient id="flr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A7660"/><stop offset="1" stop-color="#5E4E3F"/></linearGradient>
+</defs></svg>
+<div id="b">
+  <div class="left">
+    <div class="mark"><div class="ico"><i style="background:#C0C0C0"></i><i style="background:#C0C000"></i><i style="background:#00C0C0"></i><i style="background:#00C000"></i><i style="background:#C000C0"></i><i style="background:#C00000"></i><i style="background:#0000C0"></i></div><span>TrueStretch for Windows</span></div>
+    <h1 id="h">True <em id="st">stretched</em></h1>
+    <p>One click stretched resolution for VALORANT, Fortnite and CS2. Applied when the game starts, reverted when it exits. No black bars.</p>
+    <div class="chips"><span class="on">1440×1080</span><span>1280×960</span><span>1280×1024</span><span>1600×1200</span><span>Custom</span></div>
+  </div>
+  <div class="win">
+    <div class="tb"><i></i>TrueStretch</div>
+    <div class="bd">
+      <div class="sd">
+        <div class="sh">Games</div>
+        <div class="gr on"><div class="tile" style="background:#FF4655">V<span class="run"></span></div><div><b>VALORANT</b><small>1440 × 1080 · auto</small></div></div>
+        <div class="gr"><div class="tile" style="background:#2A7FFF">F</div><div><b>Fortnite</b><small>1750 × 1080 · auto</small></div></div>
+        <div class="gr"><div class="tile" style="background:#DE9B35">CS</div><div><b>Counter-Strike 2</b><small>1280 × 960 · auto</small></div></div>
+        <div class="gr" style="opacity:.6"><div class="tile" style="background:#555">A</div><div><b>Apex Legends</b><small>Profile off</small></div></div>
+      </div>
+      <div class="mn">
+        <div class="hd"><div class="tile" style="background:#FF4655">V</div><div><b>VALORANT</b><small><em>Running</em> · stretched to 1440 × 1080</small></div><span class="btn">Revert</span></div>
+        <div class="pv">
+          <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
+            <defs><clipPath id="cl"><rect id="clr" x="0" y="0" width="800" height="900"/></clipPath><clipPath id="cr"><rect id="crr" x="800" y="0" width="800" height="900"/></clipPath></defs>
+            <g clip-path="url(#cl)"><g id="wl"></g><g id="hl"></g></g>
+            <g clip-path="url(#cr)"><g id="wr" transform="translate(800 0) scale(1.3333 1) translate(-800 0)"></g><g id="hr"></g></g>
+          </svg>
+          <div class="tag" style="left:10px;background:#F2F3F5">NATIVE</div>
+          <div class="tag" style="right:10px;background:var(--accent)">STRETCHED 4:3</div>
+          <div class="split" id="sp"><div class="knob"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bars"><i style="background:#C0C0C0"></i><i style="background:#C0C000"></i><i style="background:#00C0C0"></i><i style="background:#00C000"></i><i style="background:#C000C0"></i><i style="background:#C00000"></i><i style="background:#0000C0"></i></div>
+</div>
+<script>
+(function(){
+const $ = s => document.querySelector(s);
+function world(){
+  let s = '<rect x="-400" y="0" width="2400" height="900" fill="url(#sky)"/><rect x="-400" y="470" width="2400" height="430" fill="url(#flr)"/>';
+  s += '<polygon points="560,210 1040,210 1040,600 560,600" fill="#CDBB9C"/><rect x="710" y="330" width="180" height="270" fill="url(#door)"/><rect x="700" y="318" width="200" height="14" fill="#A8946F"/>';
+  s += '<polygon points="-400,-80 560,210 560,600 -400,1010" fill="#A98764"/><polygon points="2000,-80 1040,210 1040,600 2000,1010" fill="#8C6F53"/>';
+  for (let i=1;i<7;i++){ const y0 = -80+i*150, y1 = 210+i*55; s += `<path d="M-400 ${y0}L560 ${y1}" stroke="#94744f" stroke-width="3"/><path d="M2000 ${y0}L1040 ${y1}" stroke="#7a5f45" stroke-width="3"/>`; }
+  for (let i=-6;i<=6;i++) s += `<path d="M${800+i*260} 900L${800+i*40} 600" stroke="#6b5a48" stroke-width="2"/>`;
+  s += '<polygon points="300,560 470,560 470,720 300,720" fill="#7B5E3B"/><polygon points="300,560 470,560 500,535 330,535" fill="#94734A"/><path d="M300 560L470 720M470 560L300 720" stroke="#5f482e" stroke-width="6"/>';
+  s += '<polygon points="1150,520 1300,520 1300,660 1150,660" fill="#6E5536"/>';
+  s += '<g stroke="#FF3B30" stroke-width="5"><rect x="778" y="446" width="44" height="98" rx="14" fill="#2b3442"/><circle cx="800" cy="424" r="18" fill="#e6c3a2"/><rect x="782" y="536" width="15" height="62" rx="6" fill="#1f2630"/><rect x="803" y="536" width="15" height="62" rx="6" fill="#1f2630"/></g>';
+  s += '<g stroke="#38FFD0" stroke-width="6"><path d="M760 424h18M822 424h18M800 384v18M800 446v18"/></g>';
+  return s;
+}
+function hud(sx){
+  const t = (ax,ay,inner) => `<g transform="translate(${ax} ${ay}) scale(${sx} 1) translate(${-ax} ${-ay})">${inner}</g>`;
+  return t(140,200,'<circle cx="140" cy="200" r="92" fill="rgba(10,12,14,.55)" stroke="rgba(255,255,255,.35)" stroke-width="3"/>')
+    + t(800,846,'<rect x="650" y="816" width="300" height="60" rx="6" fill="rgba(10,12,14,.6)"/><rect x="780" y="836" width="150" height="10" fill="#38FFD0"/>');
+}
+$('#wl').innerHTML = world(); $('#wr').innerHTML = world(); $('#hl').innerHTML = hud(1); $('#hr').innerHTML = hud(1.3333);
+function split(k){ $('#clr').setAttribute('width',1600*k); $('#crr').setAttribute('x',1600*k); $('#crr').setAttribute('width',1600*(1-k)); $('#sp').style.left = (492*k)+'px'; }
+window.setScene = function(){};
+window.renderAt = function(t){ split(0.42 + 0.06*Math.sin(t)); };
+window.CAPTURE = {width:1280, height:440, scale:1.5, shots:[{name:'banner', scene:'banner', t:0}]};
+window.renderAt(0);
+})();
+</script>
+</body>
+</html>

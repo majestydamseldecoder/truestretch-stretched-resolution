@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TrueStretch - app design</title>
+<meta name="viewport" content="width=1440">
+<style>
+:root{
+  --stage:#0c0d0f;
+  --title:#1E1F22; --side:#2B2D31; --main:#313338; --field:#1E1F22; --hover:#393C41; --sel:#404249; --line:#3F4147; --card:#2B2D31;
+  --text:#F2F3F5; --body:#DBDEE1; --dim:#B5BAC1; --faint:#949BA4; --mute:#6D6F78;
+  --accent:#F5A524; --on-accent:#1E1F22;
+  --ok:#23A55A; --err:#F23F43;
+  --b1:#C0C0C0; --b2:#C0C000; --b3:#00C0C0; --b4:#00C000; --b5:#C000C0; --b6:#C00000; --b7:#0000C0;
+  --f-display:'SF Pro','SF Pro Display',-apple-system,'Segoe UI Variable Display',system-ui,sans-serif;
+  --f-text:'SF Pro Text','SF Pro',-apple-system,'Segoe UI Variable Text',system-ui,sans-serif;
+  --f-mono:'SF Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;height:900px;overflow:hidden;background:var(--stage)}
+body{font:400 13.5px/1.35 var(--f-text);color:var(--body);-webkit-font-smoothing:antialiased}
+.cap *{transition:none!important;animation:none!important}
+svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* stage: quiet test-signal graticule behind the window */
+#stage{position:relative;width:1440px;height:900px;overflow:hidden;background:radial-gradient(ellipse 900px 620px at 50% 50%,#15171a 0%,#0c0d0f 72%)}
+#grat{position:absolute;inset:0}
+.st-bars{position:absolute;left:80px;bottom:20px;display:flex;height:6px;width:140px;opacity:.8}
+.st-bars i{flex:1}
+.st-label{position:absolute;font:500 10.5px/1 var(--f-mono);color:#4a5058;letter-spacing:.06em}
+
+/* window */
+.win{position:absolute;left:80px;top:50px;width:1280px;height:800px;border-radius:8px;overflow:hidden;background:var(--main);
+  border:1px solid #111214;box-shadow:0 28px 70px rgba(0,0,0,.6)}
+.tb{height:32px;display:flex;align-items:center;background:var(--title);padding-left:12px}
+.tb .ico{width:16px;height:16px;border-radius:4px;overflow:hidden;display:flex;margin-right:9px}
+.tb .ico i{flex:1}
+.tb .name{font:600 12.5px var(--f-text);color:var(--dim)}
+.tb .ctl{margin-left:auto;display:flex;height:32px}
+.tb .ctl span{width:46px;display:grid;place-items:center;color:var(--faint)}
+.body{display:flex;height:742px}
+
+/* sidebar */
+.side{width:248px;background:var(--side);display:flex;flex-direction:column}
+.search{margin:12px 10px 6px;height:30px;border-radius:5px;background:var(--field);display:flex;align-items:center;gap:8px;padding:0 9px;color:var(--mute);font-size:13px}
+.search svg.i{width:16px;height:16px}
+.sec{display:flex;align-items:center;justify-content:space-between;margin:14px 10px 4px 12px;font:600 11.5px var(--f-text);color:var(--faint);letter-spacing:.02em}
+.sec svg.i{width:16px;height:16px;color:var(--faint)}
+.gl{padding:0 8px}
+.gr{display:flex;align-items:center;gap:10px;height:46px;padding:0 8px;border-radius:5px;color:var(--faint);cursor:default}
+.gr:hover{background:var(--hover);color:var(--body)}
+.gr.on{background:var(--sel);color:var(--text)}
+.tile{position:relative;width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font:700 11px var(--f-text);color:#fff;flex:none}
+.tile .run{position:absolute;right:-3px;bottom:-3px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2.5px solid var(--side);display:none}
+.gr.on .tile .run{border-color:var(--sel)}
+.gr.running .tile .run{display:block}
+.gr .nm{flex:1;min-width:0}
+.gr .nm b{display:block;font:500 14px var(--f-text);color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gr .nm small{display:block;font:500 11.5px var(--f-text);color:var(--mute);margin-top:1px}
+.gr.on .nm small{color:var(--faint)}
+.gr .rs{font:500 11.5px var(--f-mono);color:var(--mute)}
+.gr.on .rs{color:var(--faint)}
+.gr.off .tile{filter:grayscale(1);opacity:.5}
+.nl{padding:0 8px;margin-top:2px}
+.nr{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:5px;color:var(--faint);font:500 14px var(--f-text)}
+.nr.on{background:var(--sel);color:var(--text)}
+.sep{height:1px;background:var(--line);margin:10px 12px 8px}
+.mon{margin-top:auto;background:#232428;height:56px;display:flex;align-items:center;gap:10px;padding:0 12px;color:var(--faint)}
+.mon .t{flex:1;min-width:0}
+.mon .t b{display:block;font:600 13px var(--f-text);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mon .t small{display:block;white-space:nowrap;font:400 11.5px var(--f-text);color:var(--faint)}
+.badge{font:600 11px var(--f-text);padding:3px 7px;border-radius:4px;background:#3a3c42;color:var(--dim);white-space:nowrap}
+.badge.st{background:var(--accent);color:var(--on-accent)}
+
+/* main */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
+.view{display:none;flex-direction:column;flex:1;min-height:0}
+.view.on{display:flex}
+.hd{height:60px;display:flex;align-items:center;gap:12px;padding:0 20px 0 24px;border-bottom:1px solid #26282c}
+.hd .tile{width:34px;height:34px;border-radius:8px;font-size:13px}
+.hd .tt b{display:block;font:600 17px var(--f-text);color:var(--text)}
+.hd .tt small{display:block;font:400 12.5px var(--f-text);color:var(--faint);margin-top:1px}
+.hd .tt small .live{color:var(--ok)}
+.hd .acts{margin-left:auto;display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 14px;border-radius:5px;font:500 13.5px var(--f-text);background:#4E5058;color:var(--text);white-space:nowrap}
+.btn svg.i{width:16px;height:16px}
+.btn.pri{background:var(--accent);color:var(--on-accent);font-weight:600}
+.btn.ghost{background:transparent;color:var(--dim);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.sm{height:28px;padding:0 11px;font-size:13px}
+.tabs{display:flex;gap:22px;height:42px;padding:0 24px;border-bottom:1px solid #26282c}
+.tab{display:flex;align-items:center;font:500 14px var(--f-text);color:var(--faint);position:relative}
+.tab.on{color:var(--text)}
+.tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--accent);border-radius:2px}
+.pg{flex:1;min-height:0;padding:20px 24px;overflow:hidden}
+.status{height:26px;background:var(--title);display:flex;align-items:center;gap:18px;padding:0 12px;font:400 12px var(--f-text);color:var(--faint);border-top:1px solid #111214}
+.status .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:7px}
+.status .r{margin-left:auto;display:flex;gap:18px}
+.status b{font-weight:500;color:var(--dim)}
+
+/* form primitives */
+.h3{font:600 13px var(--f-text);color:var(--text);margin-bottom:10px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg span{height:32px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border-radius:5px;background:var(--card);font:500 13px var(--f-mono);color:var(--dim);box-shadow:inset 0 0 0 1px var(--line)}
+.seg span.on{box-shadow:inset 0 0 0 1.5px var(--accent);color:var(--text);background:rgba(245,165,36,.08)}
+.seg span.na{color:var(--mute)}
+.seg span svg.i{width:14px;height:14px}
+.fld{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:13px;color:var(--faint)}
+.inp{height:32px;min-width:84px;border-radius:5px;background:var(--field);display:flex;align-items:center;padding:0 10px;font:500 13px var(--f-mono);color:var(--text)}
+.sel{height:32px;border-radius:5px;background:var(--field);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 10px;color:var(--text);font-size:13px;min-width:180px}
+.sel svg.i{width:16px;height:16px;color:var(--faint)}
+.rows{background:var(--card);border-radius:7px;overflow:hidden}
+.row{display:flex;align-items:center;gap:14px;min-height:58px;padding:9px 16px;border-top:1px solid #36383d}
+.row:first-child{border-top:0}
+.row .rt{flex:1;min-width:0}
+.row .rt b{display:block;font:500 13.5px var(--f-text);color:var(--text)}
+.row .rt small{display:block;font:400 12px/1.4 var(--f-text);color:var(--faint);margin-top:2px}
+.row > svg.i{color:var(--faint)}
+.row > svg.i.ok-t{color:var(--ok)}
+.sw{width:40px;height:22px;border-radius:11px;background:#4E5058;position:relative;flex:none}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff}
+.sw.on{background:var(--accent)}
+.sw.on::after{left:21px}
+.sw.lock{opacity:.55}
+.note{font:400 12px/1.45 var(--f-text);color:var(--faint)}
+.ok-t{color:var(--ok)} .warn-t{color:var(--accent)} .err-t{color:var(--err)}
+
+/* profile tab */
+.pf{display:grid;grid-template-columns:1fr 330px;gap:24px;height:100%}
+.side-card{background:var(--card);border-radius:7px;padding:14px;align-self:start}
+.thumb{width:302px;height:170px;border-radius:4px;overflow:hidden;position:relative;background:#000}
+.thumb svg{position:absolute;inset:0;width:100%;height:100%}
+.kv{display:flex;justify-content:space-between;align-items:center;height:32px;font-size:12.5px;color:var(--faint);border-top:1px solid #36383d}
+.kv b{font:500 12.5px var(--f-mono);color:var(--body)}
+.kv:first-child{border-top:0}
+
+/* preview tab */
+.pvbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.pvbar .seg span{font-family:var(--f-text)}
+.pv{position:relative;width:984px;height:518px;border-radius:5px;overflow:hidden;background:#000}
+.pv > svg{position:absolute;inset:0;width:100%;height:100%}
+.pv-tag{position:absolute;top:14px;font:800 11px/1 var(--f-display);font-stretch:150%;letter-spacing:.03em;padding:6px 8px;border-radius:3px;color:#111}
+.pv-split{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:#fff}
+.pv-knob{position:absolute;top:82%;left:50%;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;background:#fff;display:grid;place-items:center;color:#111;box-shadow:0 2px 10px rgba(0,0,0,.45)}
+.pv-knob svg.i{width:16px;height:16px;stroke-width:2}
+
+/* config tab */
+.cfbar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.path{flex:1;min-width:0;height:32px;border-radius:5px;background:var(--field);display:flex;align-items:center;gap:8px;padding:0 10px;font:500 12px var(--f-mono);color:var(--dim);white-space:nowrap;overflow:hidden}
+.path svg.i{width:16px;height:16px;color:var(--faint)}
+.code{background:#2B2D31;border-radius:6px;overflow:hidden;font:500 12.5px/21px var(--f-mono)}
+.code .ch{display:flex;align-items:center;gap:10px;height:34px;padding:0 12px;background:#26282c;font:500 12px var(--f-text);color:var(--faint)}
+.code .ch b{color:var(--text);font-weight:600}
+.dl{display:flex;white-space:nowrap}
+.dl .ln{width:44px;text-align:right;padding-right:12px;color:var(--mute);flex:none}
+.dl .sg{width:16px;flex:none;color:var(--mute)}
+.dl.rm{background:rgba(242,63,67,.11);color:#f3a5a7}
+.dl.ad{background:rgba(35,165,90,.13);color:#9fdcb7}
+.dl.ctx{color:var(--faint)}
+.dl.hd2{color:#c9b98e}
+
+/* activity tab */
+.tbl{background:var(--card);border-radius:7px;overflow:hidden}
+.tr{display:grid;grid-template-columns:150px 28px 250px 1fr;align-items:center;height:38px;padding:0 14px;border-top:1px solid #36383d;font-size:13px;color:var(--body);white-space:nowrap;overflow:hidden}
+.tr:first-child{border-top:0}
+.tr.th{height:32px;font:600 11.5px var(--f-text);color:var(--faint);background:#26282c}
+.tr .tm{font:500 12px var(--f-mono);color:var(--faint)}
+.tr .ic svg.i{width:16px;height:16px;display:block}
+.tr .dt{color:var(--faint);font-size:12.5px;overflow:hidden;text-overflow:ellipsis}
+
+/* settings pages */
+.ph{height:60px;display:flex;align-items:center;padding:0 24px;border-bottom:1px solid #26282c;font:600 17px var(--f-text);color:var(--text)}
+.grid2{display:grid;grid-template-columns:1fr 320px;gap:24px}
+.sm3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 16px 16px}
+.smc{border-radius:6px;padding:8px;box-shadow:inset 0 0 0 1px var(--line)}
+.smc.on{box-shadow:inset 0 0 0 1.5px var(--accent);background:rgba(245,165,36,.06)}
+.smc .scr{height:74px;background:#0f1012;border-radius:3px;position:relative;overflow:hidden}
+.smc .lb{display:flex;align-items:center;gap:8px;margin-top:8px;font:500 13px var(--f-text);color:var(--text)}
+.radio{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--faint);flex:none}
+.radio.on{box-shadow:inset 0 0 0 4.5px var(--accent);background:var(--card)}
+.mt .mrow{display:grid;grid-template-columns:96px 1fr auto;align-items:center;height:36px;padding:0 14px;border-top:1px solid #36383d;font:500 12.5px var(--f-mono);color:var(--body)}
+.mt .mrow:first-child{border-top:0}
+.mt .hz{color:var(--faint);font-family:var(--f-text)}
+.mt .mrow svg.i{width:16px;height:16px}
+.key{display:inline-flex;height:24px;align-items:center;padding:0 7px;border-radius:4px;background:var(--field);box-shadow:inset 0 -1px 0 #000;font:500 12px var(--f-text);color:var(--text)}
+
+/* dialog + toast */
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:20}
+.dlg{width:440px;background:var(--main);border-radius:8px;box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 0 1px #1a1b1e;overflow:hidden}
+.dlg .in{padding:20px 22px 18px}
+.dlg h2{font:600 17px var(--f-text);color:var(--text)}
+.dlg p{font:400 13.5px/1.5 var(--f-text);color:var(--dim);margin-top:8px}
+.dlg .bar{height:4px;border-radius:2px;background:#4E5058;margin-top:16px;overflow:hidden}
+.dlg .bar i{display:block;height:100%;background:var(--accent)}
+.dlg .ft{display:flex;justify-content:flex-end;gap:8px;padding:14px 22px;background:#2B2D31}
+.toast{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:none;align-items:center;gap:10px;background:#111214;border-radius:6px;padding:10px 14px;font:500 13px var(--f-text);color:var(--text);box-shadow:0 10px 30px rgba(0,0,0,.45);white-space:nowrap;z-index:21}
+.toast svg.i{width:18px;height:18px;color:var(--ok)}
+#cursor{position:absolute;left:0;top:0;width:22px;height:22px;pointer-events:none;display:none;z-index:50}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+                <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6F98AE"/><stop offset="1" stop-color="#E2CDA6"/></linearGradient>
+                <linearGradient id="door" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d1a19"/><stop offset="1" stop-color="#3a302a"/></linearGradient>
+                <linearGradient id="flr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A7660"/><stop offset="1" stop-color="#5E4E3F"/></linearGradient>
+    <symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l4 4"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 20 20"><path d="M10 4v12M4 10h12"/></symbol>
+    <symbol id="i-chip" viewBox="0 0 20 20"><rect x="5" y="5" width="10" height="10" rx="1.5"/><rect x="8" y="8" width="4" height="4"/><path d="M8 2.5V5M12 2.5V5M8 15v2.5M12 15v2.5M2.5 8H5M2.5 12H5M15 8h2.5M15 12h2.5"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 20 20"><path d="M10 2.5l6 2.2v4.6c0 4-2.6 6.9-6 8.2-3.4-1.3-6-4.2-6-8.2V4.7z"/><path d="M7.3 10.2l1.9 1.9 3.6-3.8"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 20 20"><path d="M4 6h7M15 6h1M4 14h1M9 14h7"/><circle cx="13" cy="6" r="2"/><circle cx="7" cy="14" r="2"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 20 20"><rect x="2.5" y="3.5" width="15" height="10" rx="1.5"/><path d="M7 17h6M10 13.5V17"/></symbol>
+    <symbol id="i-play" viewBox="0 0 20 20"><path d="M6.5 4.5l9 5.5-9 5.5z" fill="currentColor" stroke-width="1.2"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 20 20"><path d="M2.5 6V15a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V8A1.5 1.5 0 0 0 16 6.5H10L8.3 4H4A1.5 1.5 0 0 0 2.5 5.5z"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 20 20"><path d="M7 5L3.5 8.5 7 12"/><path d="M3.5 8.5H12a4.5 4.5 0 0 1 0 9H8"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 20 20"><circle cx="10" cy="11" r="6.5"/><path d="M10 7.5V11l2.2 1.6M8 2.5h4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5"/><path d="M6.8 10.2l2.2 2.2 4.2-4.6"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 20 20"><path d="M10 3l7.5 13h-15z"/><path d="M10 8.5v3.5M10 14.3v.2"/></symbol>
+    <symbol id="i-dot" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3.5" fill="currentColor"/></symbol>
+    <symbol id="i-arrows" viewBox="0 0 20 20"><path d="M7 6l-4 4 4 4M13 6l4 4-4 4"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4"/></symbol>
+    <symbol id="i-file" viewBox="0 0 20 20"><path d="M5 2.5h6.5L15.5 6.5V17a.5.5 0 0 1-.5.5H5a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11.5 2.5v4h4"/></symbol>
+    <symbol id="i-key" viewBox="0 0 20 20"><rect x="2.5" y="5.5" width="15" height="9" rx="1.5"/><path d="M5.5 8.5h1M9.5 8.5h1M13.5 8.5h1M6.5 11.5h7"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 20 20"><path d="M4 7h11l-3-3M16 13H5l3 3"/></symbol>
+  </defs>
+</svg>
+<div id="stage">
+  <svg id="grat" width="1440" height="900" viewBox="0 0 1440 900"></svg>
+  <div class="st-bars"><i style="background:var(--b1)"></i><i style="background:var(--b2)"></i><i style="background:var(--b3)"></i><i style="background:var(--b4)"></i><i style="background:var(--b5)"></i><i style="background:var(--b6)"></i><i style="background:var(--b7)"></i></div>
+  <div class="st-label" style="left:232px;bottom:18px">TRUESTRETCH &nbsp;/&nbsp; 1920x1080 &gt; 1440x1080</div>
+  <div class="st-label" id="tc" style="right:80px;bottom:18px">00:42:04:12</div>
+
+  <div class="win">
+    <div class="tb">
+      <div class="ico"><i style="background:var(--b1)"></i><i style="background:var(--b2)"></i><i style="background:var(--b3)"></i><i style="background:var(--b4)"></i><i style="background:var(--b5)"></i><i style="background:var(--b6)"></i><i style="background:var(--b7)"></i></div>
+      <div class="name">TrueStretch</div>
+      <div class="ctl">
+        <span><svg width="10" height="10"><path d="M0 5.5h10" stroke="currentColor"/></svg></span>
+        <span><svg width="10" height="10"><rect x=".5" y=".5" width="9" height="9" fill="none" stroke="currentColor"/></svg></span>
+        <span><svg width="10" height="10"><path d="M0 0l10 10M10 0L0 10" stroke="currentColor"/></svg></span>
+      </div>
+    </div>
+    <div class="body">
+      <aside class="side">
+        <div class="search"><svg class="i"><use href="#i-search"/></svg>Search games</div>
+        <div class="sec">Games<svg class="i"><use href="#i-plus"/></svg></div>
+        <div class="gl" id="games"></div>
+        <div class="sep"></div>
+        <div class="nl">
+          <div class="nr" data-go="gpu"><svg class="i"><use href="#i-chip"/></svg>GPU scaling</div>
+          <div class="nr" data-go="safety"><svg class="i"><use href="#i-shield"/></svg>Safety &amp; hotkeys</div>
+          <div class="nr"><svg class="i"><use href="#i-sliders"/></svg>Settings</div>
+        </div>
+        <div class="mon"><svg class="i"><use href="#i-monitor"/></svg>
+          <div class="t"><b>BenQ ZOWIE XL2546K</b><small id="monmode">1920 × 1080 · 240 Hz</small></div>
+          <span class="badge" id="monbadge">Desktop</span></div>
+      </aside>
+
+      <section class="main" id="main">
+        <div id="gamehead">
+          <div class="hd">
+            <div class="tile" style="background:#FF4655">V</div>
+            <div class="tt"><b>VALORANT</b><small id="gstate">VALORANT-Win64-Shipping.exe · Not running</small></div>
+            <div class="acts">
+              <span class="btn" id="btnrevert" style="display:none"><svg class="i"><use href="#i-undo"/></svg>Revert</span>
+              <span class="btn ghost" id="btntest"><svg class="i"><use href="#i-timer"/></svg>Test for 15 s</span>
+              <span class="btn pri"><svg class="i"><use href="#i-play"/></svg>Launch game</span>
+            </div>
+          </div>
+          <div class="tabs">
+            <div class="tab" data-go="profile">Profile</div>
+            <div class="tab" data-go="preview">Preview</div>
+            <div class="tab" data-go="config">Config file</div>
+            <div class="tab" data-go="activity">Activity</div>
+          </div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="view" data-view="profile"><div class="pg">
+          <div class="pf">
+            <div>
+              <div class="h3">Stretched resolution</div>
+              <div class="seg">
+                <span class="on">1440 × 1080</span><span>1280 × 960</span><span>1280 × 1024</span>
+                <span class="na"><svg class="i warn-t"><use href="#i-warn"/></svg>1600 × 1200</span><span>Custom</span>
+              </div>
+              <div class="fld">Width <span class="inp">1440</span> Height <span class="inp">1080</span>
+                <span style="margin-left:10px">Refresh rate</span>
+                <span class="sel">240 Hz (highest)<svg class="i"><use href="#i-chev"/></svg></span></div>
+              <div class="h3" style="margin-top:24px">When VALORANT runs</div>
+              <div class="rows">
+                <div class="row"><div class="rt"><b>Apply automatically when the game starts</b><small>Switches the display as soon as VALORANT-Win64-Shipping.exe appears</small></div><span class="sw on"></span></div>
+                <div class="row"><div class="rt"><b>Restore desktop resolution on exit</b><small>Always on. 1920 × 1080 @ 240 Hz comes back from the registry</small></div><span class="sw on lock"></span></div>
+                <div class="row"><div class="rt"><b>Edit game config to remove black bars</b><small>Writes ResolutionSizeX/Y and bShouldLetterbox=False to GameUserSettings.ini</small></div><span class="sw on"></span></div>
+                <div class="row"><div class="rt"><b>Make config file read-only</b><small>Stops VALORANT from resetting the resolution after a patch</small></div><span class="sw on"></span></div>
+                <div class="row"><div class="rt"><b>Ask the GPU driver to stretch</b><small>Requests full-panel scaling, falls back if the driver refuses</small></div><span class="sw"></span></div>
+              </div>
+            </div>
+            <div class="side-card">
+              <div class="thumb"><svg viewBox="0 0 1600 900" preserveAspectRatio="none"><g id="thumbW" transform="translate(800 0) scale(1.3333 1) translate(-800 0)"></g><g id="thumbH"></g></svg></div>
+              <div style="margin-top:10px">
+                <div class="kv">Driver mode<b class="ok-t">1440×1080 @ 240 Hz</b></div>
+                <div class="kv">Aspect ratio<b>4:3 on 16:9</b></div>
+                <div class="kv">Horizontal scale<b>1.333×</b></div>
+                <div class="kv">Pixels rendered<b>75%</b></div>
+                <div class="kv">Last session<b>2 h 14 m, reverted</b></div>
+              </div>
+            </div>
+          </div>
+        </div></div>
+
+        <!-- PREVIEW -->
+        <div class="view" data-view="preview"><div class="pg">
+          <div class="pvbar">
+            <div class="seg"><span class="on">Split</span><span>Side by side</span></div>
+            <span class="sel">Native 1920 × 1080<svg class="i"><use href="#i-chev"/></svg></span>
+            <svg class="i" style="color:var(--faint)"><use href="#i-swap"/></svg>
+            <span class="sel">1440 × 1080 stretched<svg class="i"><use href="#i-chev"/></svg></span>
+            <span class="note" style="margin-left:auto">Drag the handle to compare</span>
+          </div>
+          <div class="pv" id="pv">
+            <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
+              <defs>
+                <clipPath id="clipL"><rect id="clipLr" x="0" y="0" width="800" height="900"/></clipPath>
+                <clipPath id="clipR"><rect id="clipRr" x="800" y="0" width="800" height="900"/></clipPath>
+              </defs>
+              <g clip-path="url(#clipL)"><g id="worldL"></g><g id="hudL"></g></g>
+              <g clip-path="url(#clipR)"><g id="worldR" transform="translate(800 0) scale(1.3333 1) translate(-800 0)"></g><g id="hudR"></g></g>
+            </svg>
+            <div class="pv-tag" style="left:14px;background:#F2F3F5">NATIVE 1920×1080</div>
+            <div class="pv-tag" style="right:14px;background:var(--accent)">STRETCHED 1440×1080</div>
+            <div class="pv-split" id="pvsplit"><div class="pv-knob"><svg class="i"><use href="#i-arrows"/></svg></div></div>
+          </div>
+        </div></div>
+
+        <!-- CONFIG -->
+        <div class="view" data-view="config"><div class="pg">
+          <div class="cfbar">
+            <div class="path"><svg class="i"><use href="#i-file"/></svg>%LOCALAPPDATA%\VALORANT\Saved\Config\3b9d2e71-eu\Windows\GameUserSettings.ini</div>
+            <span class="btn ghost sm"><svg class="i"><use href="#i-folder"/></svg>Open folder</span>
+            <span class="btn ghost sm"><svg class="i"><use href="#i-undo"/></svg>Restore backup</span>
+            <span class="btn pri sm">Patch now</span>
+          </div>
+          <div class="code">
+            <div class="ch"><b>GameUserSettings.ini</b><span>Patched today at 21:40 · read-only</span><span style="margin-left:auto" id="diffcount"></span></div>
+            <div id="diff" style="padding:6px 0"></div>
+          </div>
+          <div class="note" style="margin-top:10px">Original kept as GameUserSettings.ini.truestretch.bak. VALORANT rewrites this file on exit, so it is patched again after every session.</div>
+        </div></div>
+
+        <!-- ACTIVITY -->
+        <div class="view" data-view="activity"><div class="pg">
+          <div class="tbl" id="act"></div>
+        </div></div>
+
+        <!-- GPU SCALING -->
+        <div class="view" data-view="gpu">
+          <div class="ph">GPU scaling</div>
+          <div class="pg"><div class="grid2">
+            <div>
+              <div class="rows">
+                <div class="row"><svg class="i"><use href="#i-chip"/></svg><div class="rt"><b>NVIDIA GeForce RTX 4070 SUPER</b><small>Driver 566.36 · PCI\VEN_10DE&amp;DEV_2783</small></div><span class="btn ghost sm">Open NVIDIA Control Panel</span></div>
+                <div class="row"><svg class="i"><use href="#i-monitor"/></svg><div class="rt"><b>BenQ ZOWIE XL2546K</b><small>\\.\DISPLAY1 · primary · 1920 × 1080 @ 240 Hz · DisplayPort</small></div></div>
+              </div>
+              <div class="h3" style="margin-top:22px">How the monitor shows a 4:3 resolution</div>
+              <div class="rows">
+                <div class="sm3">
+                  <div class="smc"><div class="scr"><div style="position:absolute;left:12.5%;right:12.5%;top:0;bottom:0;background:linear-gradient(#6F98AE,#E2CDA6 55%,#7a6650 56%)"></div></div><div class="lb"><span class="radio"></span>Aspect ratio</div></div>
+                  <div class="smc"><div class="scr"><div style="position:absolute;left:31%;right:31%;top:14%;bottom:14%;background:linear-gradient(#6F98AE,#E2CDA6 55%,#7a6650 56%)"></div></div><div class="lb"><span class="radio"></span>No scaling</div></div>
+                  <div class="smc on"><div class="scr"><div style="position:absolute;inset:0;background:linear-gradient(#6F98AE,#E2CDA6 55%,#7a6650 56%)"></div></div><div class="lb"><span class="radio on"></span>Full-screen</div></div>
+                </div>
+                <div class="row"><svg class="i ok-t"><use href="#i-check"/></svg><div class="rt"><b>Scaling mode: Full-screen</b><small>NVIDIA Control Panel › Display › Adjust desktop size and position</small></div></div>
+                <div class="row"><svg class="i ok-t"><use href="#i-check"/></svg><div class="rt"><b>Perform scaling on: GPU</b><small>Needed for resolutions the monitor does not scale itself</small></div></div>
+                <div class="row"><svg class="i ok-t"><use href="#i-check"/></svg><div class="rt"><b>Override the scaling mode set by games and programs</b><small>Without this, some games still show black bars</small></div></div>
+              </div>
+            </div>
+            <div>
+              <div class="h3">Modes on \\.\DISPLAY1</div>
+              <div class="rows mt">
+                <div class="mrow"><span>1440×1080</span><span class="hz">240, 144, 60 Hz</span><svg class="i ok-t"><use href="#i-check"/></svg></div>
+                <div class="mrow"><span>1280×960</span><span class="hz">240, 144, 60 Hz</span><svg class="i ok-t"><use href="#i-check"/></svg></div>
+                <div class="mrow"><span>1280×1024</span><span class="hz">240, 75, 60 Hz</span><svg class="i ok-t"><use href="#i-check"/></svg></div>
+                <div class="mrow"><span>1750×1080</span><span class="hz">240 Hz, custom</span><svg class="i ok-t"><use href="#i-check"/></svg></div>
+                <div class="mrow"><span>1680×1050</span><span class="hz">240, 60 Hz</span><svg class="i ok-t"><use href="#i-check"/></svg></div>
+                <div class="mrow"><span>1600×1200</span><span class="hz">Not available</span><svg class="i warn-t"><use href="#i-warn"/></svg></div>
+              </div>
+              <div class="note" style="margin-top:10px">Add a missing resolution once as a custom resolution in the driver panel. The highest refresh rate is always used.</div>
+            </div>
+          </div></div>
+        </div>
+
+        <!-- SAFETY -->
+        <div class="view" data-view="safety">
+          <div class="ph">Safety &amp; hotkeys</div>
+          <div class="pg" style="max-width:800px">
+            <div class="rows">
+              <div class="row"><svg class="i"><use href="#i-timer"/></svg><div class="rt"><b>Confirm manual changes</b><small>Go back to the desktop resolution if a test is not kept in time</small></div><span class="sel" style="min-width:130px">15 seconds<svg class="i"><use href="#i-chev"/></svg></span></div>
+              <div class="row"><svg class="i"><use href="#i-undo"/></svg><div class="rt"><b>Restore when a game exits</b><small>Checks running processes every 750 ms</small></div><span class="sw on"></span></div>
+              <div class="row"><svg class="i"><use href="#i-shield"/></svg><div class="rt"><b>Crash recovery</b><small>If TrueStretch closes or crashes while stretched, the desktop mode is restored on next start</small></div><span class="sw on"></span></div>
+              <div class="row"><svg class="i"><use href="#i-key"/></svg><div class="rt"><b>Toggle stretch</b><small>Works in game, also while TrueStretch is in the tray</small></div><span class="key">Ctrl</span><span class="key">Alt</span><span class="key">F9</span><span class="btn ghost sm" style="margin-left:6px">Change</span></div>
+            </div>
+            <div class="h3" style="margin-top:22px">Desktop resolution</div>
+            <div class="rows">
+              <div class="row"><svg class="i"><use href="#i-monitor"/></svg><div class="rt"><b>1920 × 1080 @ 240 Hz</b><small>Read from the registry. Stretched modes are temporary and never saved there.</small></div><span class="btn sm"><svg class="i"><use href="#i-undo"/></svg>Revert now</span></div>
+            </div>
+            <div class="h3" style="margin-top:22px">Start-up</div>
+            <div class="rows">
+              <div class="row"><div class="rt"><b>Start with Windows</b><small>Starts minimized to the tray and watches for games</small></div><span class="sw on"></span></div>
+              <div class="row"><div class="rt"><b>Show a notification when a profile is applied</b></div><span class="sw"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scrim" id="scrim"><div class="dlg"><div class="in">
+          <h2>Keep these display settings?</h2>
+          <p>VALORANT profile: 1440 × 1080 @ 240 Hz.<br>Reverting to previous display settings in <b id="secs" style="color:var(--text)">15</b> seconds.</p>
+          <div class="bar"><i id="barfill" style="width:100%"></i></div></div>
+          <div class="ft"><span class="btn">Revert</span><span class="btn pri">Keep changes</span></div></div></div>
+        <div class="toast" id="toast"><svg class="i"><use href="#i-check"/></svg>Reverted to 1920 × 1080 @ 240 Hz</div>
+      </section>
+    </div>
+    <div class="status">
+      <span><span class="dot"></span>Watching 3 games</span>
+      <span id="sbmode">\\.\DISPLAY1 · 1920 × 1080 @ 240 Hz · desktop</span>
+      <div class="r"><span><b>Ctrl+Alt+F9</b> toggles stretch</span><span>v1.0.0</span></div>
+    </div>
+  </div>
+  <svg id="cursor" viewBox="0 0 24 24"><path d="M4 2l15 11.5-6.6.9 3.9 7.4-3 1.5-3.9-7.5L4 20z" fill="#fff" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/></svg>
+</div>
+
+<script>
+(function(){
+const CAP = !!window.__CAPTURE;
+if (CAP) document.documentElement.classList.add('cap');
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const clamp = (v,a=0,b=1) => Math.min(b, Math.max(a, v));
+const seg = (t,a,b) => clamp((t-a)/(b-a));
+const ease = x => x<.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;
+const lerp = (a,b,k) => a+(b-a)*k;
+
+(function(){
+  let g = '<circle cx="720" cy="450" r="430" fill="none" stroke="#17191c" stroke-width="2"/><path d="M720 0V900M0 450H1440" stroke="#131518" stroke-width="1.5"/>';
+  for (let i=0;i<=10;i++){ const y = 50+i*80; g += `<path d="M48 ${y}H${i%5?58:66}M1392 ${y}H${i%5?1382:1374}" stroke="#262a30" stroke-width="1.5"/>`; }
+  $('#grat').innerHTML = g;
+})();
+
+const GAMES = [
+  ['V','#FF4655','VALORANT','1440 × 1080 · auto',''],
+  ['F','#2A7FFF','Fortnite','1750 × 1080 · auto',''],
+  ['CS','#DE9B35','Counter-Strike 2','1280 × 960 · auto',''],
+  ['A','#DA292A','Apex Legends','Profile off','off'],
+];
+$('#games').innerHTML = GAMES.map(([i,c,n,r,o],k)=>`<div class="gr ${o}" id="g${k}"><div class="tile" style="background:${c}">${i}<span class="run"></span></div><div class="nm"><b>${n}</b><small>${r}</small></div></div>`).join('');
+
+function world(){
+  let s = '<rect x="-400" y="0" width="2400" height="900" fill="url(#sky)"/><rect x="-400" y="470" width="2400" height="430" fill="url(#flr)"/>';
+  s += '<polygon points="560,210 1040,210 1040,600 560,600" fill="#CDBB9C"/><polygon points="560,210 1040,210 1040,236 560,236" fill="#B8A586"/>';
+  s += '<rect x="710" y="330" width="180" height="270" fill="url(#door)"/><rect x="700" y="318" width="200" height="14" fill="#A8946F"/>';
+  s += '<polygon points="-400,-80 560,210 560,600 -400,1010" fill="#A98764"/><polygon points="2000,-80 1040,210 1040,600 2000,1010" fill="#8C6F53"/>';
+  for (let i=1;i<7;i++){ const y0 = -80+i*150, y1 = 210+i*55; s += `<path d="M-400 ${y0}L560 ${y1}" stroke="#94744f" stroke-width="3"/><path d="M2000 ${y0}L1040 ${y1}" stroke="#7a5f45" stroke-width="3"/>`; }
+  for (let i=-6;i<=6;i++) s += `<path d="M${800+i*260} 900L${800+i*40} 600" stroke="#6b5a48" stroke-width="2"/>`;
+  s += '<polygon points="300,560 470,560 470,720 300,720" fill="#7B5E3B"/><polygon points="300,560 470,560 500,535 330,535" fill="#94734A"/><polygon points="470,560 500,535 500,690 470,720" fill="#5f482e"/><path d="M300 560L470 720M470 560L300 720" stroke="#5f482e" stroke-width="6"/>';
+  s += '<polygon points="1150,520 1300,520 1300,660 1150,660" fill="#6E5536"/><polygon points="1150,520 1300,520 1280,500 1170,500" fill="#86683f"/>';
+  s += '<g stroke="#FF3B30" stroke-width="4"><rect x="778" y="446" width="44" height="98" rx="14" fill="#2b3442"/><circle cx="800" cy="424" r="18" fill="#e6c3a2"/><rect x="782" y="536" width="15" height="62" rx="6" fill="#1f2630"/><rect x="803" y="536" width="15" height="62" rx="6" fill="#1f2630"/></g>';
+  s += '<g stroke="#38FFD0" stroke-width="5"><path d="M760 424h18M822 424h18M800 384v18M800 446v18"/></g>';
+  return s;
+}
+function hud(sx){
+  const t = (ax,ay,inner) => `<g transform="translate(${ax} ${ay}) scale(${sx} 1) translate(${-ax} ${-ay})">${inner}</g>`;
+  let h = t(140,200,'<circle cx="140" cy="200" r="92" fill="rgba(10,12,14,.55)" stroke="rgba(255,255,255,.35)" stroke-width="3"/><path d="M140 172l14 36h-28z" fill="#38FFD0"/><circle cx="98" cy="180" r="7" fill="#FF3B30"/>');
+  h += t(800,58,'<rect x="728" y="28" width="144" height="56" rx="6" fill="rgba(10,12,14,.6)"/><text x="800" y="68" text-anchor="middle" fill="#fff" font-family="SF Pro Display,sans-serif" font-weight="700" font-size="32">1:32</text>');
+  h += t(800,846,'<rect x="650" y="816" width="300" height="60" rx="6" fill="rgba(10,12,14,.6)"/><text x="700" y="858" fill="#fff" font-family="SF Pro Display,sans-serif" font-weight="700" font-size="34">100</text><rect x="780" y="836" width="150" height="10" fill="#38FFD0"/><rect x="780" y="852" width="90" height="6" fill="#9AA3AE"/>');
+  h += t(1440,846,'<text x="1520" y="866" text-anchor="end" fill="#fff" font-family="SF Pro Display,sans-serif" font-weight="700" font-size="44">25<tspan fill="#9AA3AE" font-size="26"> / 75</tspan></text>');
+  return h;
+}
+$('#worldL').innerHTML = world(); $('#worldR').innerHTML = world(); $('#thumbW').innerHTML = world();
+$('#hudL').innerHTML = hud(1); $('#hudR').innerHTML = hud(1.3333); $('#thumbH').innerHTML = hud(1.3333);
+function setSplit(k){
+  const x = 1600*k;
+  $('#clipLr').setAttribute('width', x); $('#clipRr').setAttribute('x', x); $('#clipRr').setAttribute('width', 1600-x);
+  $('#pvsplit').style.left = (984*k)+'px';
+}
+
+const DIFF = [
+  ['hd2',' ','[/Script/ShooterGame.ShooterGameUserSettings]',1],
+  ['rm','-','ResolutionSizeX=1920',4],['ad','+','ResolutionSizeX=1440',4],
+  ['ctx',' ','ResolutionSizeY=1080',5],
+  ['rm','-','LastUserConfirmedResolutionSizeX=1920',6],['ad','+','LastUserConfirmedResolutionSizeX=1440',6],
+  ['rm','-','DesiredScreenWidth=1920',10],['ad','+','DesiredScreenWidth=1440',10],
+  ['rm','-','LastUserConfirmedDesiredScreenWidth=1920',12],['ad','+','LastUserConfirmedDesiredScreenWidth=1440',12],
+  ['rm','-','FullscreenMode=1',15],['ad','+','FullscreenMode=0',15],
+  ['rm','-','LastConfirmedFullscreenMode=1',16],['ad','+','LastConfirmedFullscreenMode=0',16],
+  ['ad','+','PreferredFullscreenMode=0',17],
+  ['rm','-','bShouldLetterbox=True',21],['ad','+','bShouldLetterbox=False',21],
+  ['rm','-','bLastConfirmedShouldLetterbox=True',22],['ad','+','bLastConfirmedShouldLetterbox=False',22],
+  ['ctx',' ','bUseVSync=False',24],
+];
+$('#diff').innerHTML = DIFF.map(([c,s,l,n])=>`<div class="dl ${c}"><span class="ln">${n}</span><span class="sg">${s}</span><span>${l}</span></div>`).join('');
+$('#diffcount').innerHTML = `<span style="color:#7fd3a0">+${DIFF.filter(d=>d[0]==='ad').length}</span>&nbsp;&nbsp;<span style="color:#f08a8d">&minus;${DIFF.filter(d=>d[0]==='rm').length}</span>`;
+
+const ICON = {ok:['i-check','ok-t'], info:['i-dot','']};
+const BASE = [
+  ['Yesterday 23:12','ok','Restored desktop resolution','Fortnite exited · 1920 × 1080 @ 240 Hz'],
+  ['Yesterday 23:12','ok','Patched config file','Fortnite · GameUserSettings.ini · 11 keys'],
+  ['Yesterday 22:10','ok','Applied 1750 × 1080 @ 240 Hz','Fortnite started · FortniteClient-Win64-Shipping.exe'],
+  ['Yesterday 20:41','ok','Restored desktop resolution','Counter-Strike 2 exited · session 48 m'],
+  ['Yesterday 19:53','ok','Applied 1280 × 960 @ 240 Hz','Counter-Strike 2 started · cs2.exe'],
+  ['Yesterday 19:52','ok','Patched config file','cs2_video.txt · 5 keys'],
+];
+const LIVE = [
+  [0.8,'Today 21:42','info','VALORANT started','VALORANT-Win64-Shipping.exe · pid 18244'],
+  [1.2,'Today 21:42','ok','Applied 1440 × 1080 @ 240 Hz','Tested with CDS_TEST, applied with CDS_FULLSCREEN'],
+  [3.6,'Today 23:56','info','VALORANT exited','Session 2 h 14 m'],
+  [4.0,'Today 23:56','ok','Restored desktop resolution','1920 × 1080 @ 240 Hz from the registry'],
+  [4.4,'Today 23:56','ok','Patched config file','GameUserSettings.ini · 13 keys · read-only'],
+];
+function row(tm,k,ev,dt,op=1,h=38){ const [ic,cl] = ICON[k]; return `<div class="tr" style="opacity:${op};height:${h}px;${h<1?'border:0':''}"><span class="tm">${tm}</span><span class="ic"><svg class="i ${cl}" style="${k==='info'?'color:var(--faint)':''}"><use href="#${ic}"/></svg></span><span>${ev}</span><span class="dt">${dt}</span></div>`; }
+function renderActivity(t){
+  t = ((t%6)+6)%6;
+  const fade = seg(t,5.3,5.95);
+  let live = '';
+  for (let i=LIVE.length-1;i>=0;i--){ const [s,tm,k,ev,dt] = LIVE[i]; if (t>=s){ live += row(tm,k,ev,dt,seg(t,s,s+.2)*(1-fade),38*seg(t,s,s+.15)*(1-fade)); } }
+  $('#act').innerHTML = '<div class="tr th"><span>Time</span><span></span><span>Event</span><span>Details</span></div>' + live + BASE.map(r=>row(...r)).join('');
+  setRunning(t>=0.8 && t<3.6, t>=1.2 && t<4.0);
+}
+
+function setRunning(running, stretched){
+  $('#g0').classList.toggle('running', running);
+  $('#gstate').innerHTML = running ? 'VALORANT-Win64-Shipping.exe · <span class="live">Running</span>' + (stretched ? ' · stretched to 1440 × 1080' : '') : 'VALORANT-Win64-Shipping.exe · Not running';
+  setStretched(stretched);
+}
+function setStretched(on){
+  $('#monmode').textContent = on ? '1440 × 1080 · 240 Hz' : '1920 × 1080 · 240 Hz';
+  $('#monbadge').textContent = on ? 'Stretched' : 'Desktop'; $('#monbadge').classList.toggle('st', on);
+  $('#sbmode').textContent = on ? '\\\\.\\DISPLAY1 · 1440 × 1080 @ 240 Hz · stretched' : '\\\\.\\DISPLAY1 · 1920 × 1080 @ 240 Hz · desktop';
+  $('#btnrevert').style.display = on ? 'inline-flex' : 'none';
+}
+function cursor(x,y,show=true,press=false){
+  const c = $('#cursor'); c.style.display = show ? 'block' : 'none';
+  c.style.transform = `translate(${x}px,${y}px) scale(${press?0.86:1})`;
+}
+const rel = (el,fx=.5,fy=.5) => { const r = el.getBoundingClientRect(); return {x:r.left+r.width*fx, y:r.top+r.height*fy}; };
+function tcode(t){ const f = Math.floor(t*30)%30, s = Math.floor(t)%60, m = Math.floor(t/60)%60; return `00:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}:${String(f).padStart(2,'0')}`; }
+
+const GAMEVIEWS = ['profile','preview','config','activity'];
+let view = 'profile', mode = '';
+function show(v){
+  view = v;
+  $$('.view').forEach(e=>e.classList.toggle('on', e.dataset.view===v));
+  $('#gamehead').style.display = GAMEVIEWS.includes(v) ? 'block' : 'none';
+  $$('.tab').forEach(e=>e.classList.toggle('on', e.dataset.go===v));
+  $$('.nr').forEach(e=>e.classList.toggle('on', e.dataset.go===v));
+  $('#g0').classList.toggle('on', GAMEVIEWS.includes(v));
+  $('#scrim').style.display = 'none'; $('#toast').style.display = 'none';
+  setRunning(false,false); cursor(0,0,false);
+}
+function renderPreview(t){
+  if (mode!=='drag'){ setSplit(0.5); return; }
+  t = ((t%5)+5)%5;
+  let k = 0.5;
+  if (t>=0.5 && t<1.8) k = lerp(0.5,0.86,ease(seg(t,0.5,1.8)));
+  else if (t>=1.8 && t<3.4) k = lerp(0.86,0.16,ease(seg(t,1.8,3.4)));
+  else if (t>=3.4 && t<4.4) k = lerp(0.16,0.5,ease(seg(t,3.4,4.4)));
+  setSplit(k);
+  const h = rel($('#pv .pv-knob')), rest = {x:1010, y:780};
+  let p;
+  if (t<0.5){ const e = ease(seg(t,0,0.5)); p = {x:lerp(rest.x,h.x,e), y:lerp(rest.y,h.y,e)}; }
+  else if (t<4.4) p = h;
+  else { const e = ease(seg(t,4.4,5)); p = {x:lerp(h.x,rest.x,e), y:lerp(h.y,rest.y,e)}; }
+  cursor(p.x-4,p.y-2,true,t>=0.5&&t<4.4);
+}
+function renderTest(t){
+  t = ((t%6)+6)%6;
+  const b = rel($('#btntest'),.55,.6), rest = {x:b.x-280, y:b.y+330};
+  const open = t>=0.7 && t<4.7, k = seg(t,0.7,4.7);
+  $('#scrim').style.display = open ? 'flex' : 'none';
+  $('#secs').textContent = Math.max(1, Math.ceil(15*(1-k)-1e-6));
+  $('#barfill').style.width = (100*(1-k)).toFixed(1)+'%';
+  setStretched(open);
+  const ta = t>=4.7 ? 1-seg(t,5.4,5.95) : 0;
+  $('#toast').style.display = ta>0 ? 'flex' : 'none'; $('#toast').style.opacity = ta;
+  let p;
+  if (t<0.55){ const e = ease(seg(t,0,0.55)); p = {x:lerp(rest.x,b.x,e), y:lerp(rest.y,b.y,e)}; }
+  else if (t<4.9) p = b;
+  else { const e = ease(seg(t,4.9,5.8)); p = {x:lerp(b.x,rest.x,e), y:lerp(b.y,rest.y,e)}; }
+  cursor(p.x-4,p.y-2,true,t>=0.55&&t<0.75);
+}
+window.setScene = function(name){
+  const alias = {'preview-drag':['preview','drag'], 'activity-run':['activity','run'], 'profile-test':['profile','test']};
+  const [v,m] = alias[name] || [name,''];
+  show(v); mode = m;
+};
+window.renderAt = function(t){
+  $('#tc').textContent = tcode(t + 2522.4);
+  if (view==='preview') renderPreview(t);
+  else if (view==='activity') renderActivity(mode==='run' ? t : 2.2);
+  else if (view==='profile' && mode==='test') renderTest(t);
+};
+window.CAPTURE = {
+  width:1440, height:900, scale:1.25,
+  shots:[
+    {name:'screenshot-profile', scene:'profile', t:2},
+    {name:'screenshot-stretch-preview', scene:'preview', t:2},
+    {name:'screenshot-game-config', scene:'config', t:2},
+    {name:'screenshot-gpu-scaling', scene:'gpu', t:2},
+    {name:'screenshot-safety', scene:'safety', t:2},
+  ],
+  gifs:[
+    {name:'demo-stretch-preview', scene:'preview-drag', seconds:5, fps:20, width:960},
+    {name:'demo-auto-apply', scene:'activity-run', seconds:6, fps:20, width:960},
+    {name:'demo-safety-revert', scene:'profile-test', seconds:6, fps:20, width:960},
+  ]
+};
+
+window.setScene('profile'); window.renderAt(2);
+$$('[data-go]').forEach(e=>e.addEventListener('click',()=>window.setScene(e.dataset.go)));
+$('#g0').addEventListener('click',()=>window.setScene('profile'));
+$('#pv').addEventListener('pointermove', e=>{ if ((e.buttons&1) && mode!=='drag'){ const r = $('#pv').getBoundingClientRect(); setSplit(clamp((e.clientX-r.left)/r.width,.04,.96)); }});
+const ORDER = ['profile','preview','config','activity','gpu','safety'];
+window.addEventListener('keydown', e=>{ const i = parseInt(e.key,10)-1; if (i>=0 && i<ORDER.length) window.setScene(ORDER[i]); });
+if (!CAP){ const loop = () => { window.renderAt(performance.now()/1000); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body>
+</html>
